@@ -92,9 +92,9 @@ if __name__ == "__main__":
     CONFIGURATIONS = {
         "488" : {
             "abberior_action_spaces" : {
-                    "p_sted" : {"low" : 0., "high" : 80.},
-                    "p_ex" : {"low" : 0., "high" : 18.},
-                    "pdt" : {"low" : 1.0e-6, "high" : 100.0e-6},
+                "p_sted" : {"low" : 0., "high" : 80.},
+                "p_ex" : {"low" : 0., "high" : 18.},
+                "pdt" : {"low" : 1.0e-6, "high" : 100.0e-6},
             },
             "conf_params" : {
                 "p_sted" : 0.,
@@ -104,9 +104,9 @@ if __name__ == "__main__":
         },
         "561" : {
             "abberior_action_spaces" : {
-                    "p_sted" : {"low" : 0., "high" : 80.},
-                    "p_ex" : {"low" : 0., "high" : 18.},
-                    "pdt" : {"low" : 1.0e-6, "high" : 100.0e-6},
+                "p_sted" : {"low" : 0., "high" : 80.},
+                "p_ex" : {"low" : 0., "high" : 18.},
+                "pdt" : {"low" : 1.0e-6, "high" : 100.0e-6},
             },
             "conf_params" : {
                 "p_sted" : 0.,
@@ -116,9 +116,9 @@ if __name__ == "__main__":
         },
         "640" : {
             "abberior_action_spaces" : {
-                    "p_sted" : {"low" : 0., "high" : 80.},
-                    "p_ex" : {"low" : 0., "high" : 18.},
-                    "pdt" : {"low" : 1.0e-6, "high" : 100.0e-6},
+                "p_sted" : {"low" : 0., "high" : 80.},
+                "p_ex" : {"low" : 0., "high" : 18.},
+                "pdt" : {"low" : 1.0e-6, "high" : 100.0e-6},
             },
             "conf_params" : {
                 "p_sted" : 0.,
