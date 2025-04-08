@@ -1,4 +1,5 @@
 # user-defined
+src/analysis/pretrained/*
 .microscope_cache.pkl
 data/
 
