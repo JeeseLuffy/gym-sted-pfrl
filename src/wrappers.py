@@ -2,6 +2,7 @@
 import numpy
 import gym
 import gym.spaces
+from collections import deque
 
 class GymnasiumWrapper(gym.Wrapper):
     def __init__(self, env: gym.Env):
@@ -84,3 +85,34 @@ class WrapPyTorch(gym.ObservationWrapper):
             return observation.transpose((2, 0, 1)).astype(self.dtype)
         else:
             return observation.astype(self.dtype)
+
+
+class ActionStatsWrapper(gym.Wrapper):
+    """
+    Tracks action mean values during training so hooks can monitor collapse.
+
+    Attributes:
+        last_action_mean (float): Mean of most recent action vector.
+        action_mean_window (float): Running mean over recent actions.
+    """
+
+    def __init__(self, env, window=200):
+        super().__init__(env)
+        self.window = int(window)
+        self._buffer = deque(maxlen=self.window)
+        self.last_action_mean = 0.0
+        self.action_mean_window = 0.0
+
+    def reset(self, *args, **kwargs):
+        obs = self.env.reset(*args, **kwargs)
+        self._buffer.clear()
+        self.last_action_mean = 0.0
+        self.action_mean_window = 0.0
+        return obs
+
+    def step(self, action):
+        action_arr = numpy.asarray(action, dtype=numpy.float32)
+        self.last_action_mean = float(action_arr.mean())
+        self._buffer.append(self.last_action_mean)
+        self.action_mean_window = float(numpy.mean(self._buffer))
+        return self.env.step(action)

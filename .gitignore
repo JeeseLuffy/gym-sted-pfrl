@@ -3,6 +3,12 @@ src/analysis/pretrained/*
 .microscope_cache.pkl
 data
 logs/
+optuna_logs/
+optuna.db
+optuna.db-*
+optuna*.db
+data_optuna*/
+optuna_logs*/
 *DS_Store
 
 # Byte-compiled / optimized / DLL files

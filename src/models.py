@@ -40,7 +40,7 @@ class Policy(nn.Module):
     """
     def __init__(
         self, in_channels=1, action_size=1, obs_space=None, encoded_signal_shape=4,
-        activation=nn.functional.leaky_relu
+        activation=nn.functional.leaky_relu, use_dropout=True
     ):
         self.in_channels = in_channels
         self.action_size = action_size
@@ -57,13 +57,14 @@ class Policy(nn.Module):
         ])
 
         # Image encoder (1 image to a vector) (This is the LargeAtari architecture)
-        self.image_encoder_layers = nn.ModuleList([
-            nn.Conv2d(self.in_channels, 32, 8, stride=4),
-            nn.Dropout2d(p=0.15),
-            nn.Conv2d(32, 64, 4, stride=2),
-            nn.Dropout2d(p=0.15),
-            nn.Conv2d(64, 64, 3, stride=1),
-        ])
+        img_layers = [nn.Conv2d(self.in_channels, 32, 8, stride=4)]
+        if use_dropout:
+            img_layers.append(nn.Dropout2d(p=0.15))
+        img_layers.append(nn.Conv2d(32, 64, 4, stride=2))
+        if use_dropout:
+            img_layers.append(nn.Dropout2d(p=0.15))
+        img_layers.append(nn.Conv2d(64, 64, 3, stride=1))
+        self.image_encoder_layers = nn.ModuleList(img_layers)
 
         # Signal encoder ([SNR, Resolution, Bleach] to a vector of length 4
         sig_layers = [nn.Linear(self.obs_space[1].shape[0], 16)]

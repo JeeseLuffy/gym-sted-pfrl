@@ -16,7 +16,7 @@ import pfrl
 from pfrl import experiments, utils
 from pfrl.policies import GaussianHeadWithFixedCovariance, SoftmaxCategoricalHead
 
-from src import models, WrapPyTorch, GymnasiumWrapper
+from src import models, WrapPyTorch, GymnasiumWrapper, ActionStatsWrapper
 from src.hooks import ProgressStepHook
 from src.uncertainty_wrapper import UncertaintyRewardWrapper
 
@@ -50,6 +50,8 @@ def main():
     parser.add_argument("--steps", type=int, default=10 ** 5)
     parser.add_argument("--eval-interval", type=int, default=1e+3)
     parser.add_argument("--eval-n-runs", type=int, default=100)
+    parser.add_argument("--eval-seed", type=int, default=None,
+                        help="If set, force deterministic eval seed (independent from train seed).")
     parser.add_argument("--update-interval", type=int, default=512)
     parser.add_argument("--checkpoint-freq", type=int, default=None)
     parser.add_argument("--reward-scale-factor", type=float, default=1.)
@@ -77,15 +79,27 @@ def main():
                         help="Disable Dropout in Policy layers (for true FLClab Baseline).")
     parser.add_argument("--wandb-project", type=str, default="",
                         help="Weights & Biases project name. If provided, enables wandb tracking.")
+    parser.add_argument("--wandb-entity", type=str, default="",
+                        help="Weights & Biases entity/user/team.")
+    parser.add_argument("--wandb-group", type=str, default="",
+                        help="Weights & Biases group name.")
+    parser.add_argument("--wandb-tags", type=str, default="",
+                        help="Comma-separated W&B tags, e.g. routeA,optuna.")
+    parser.add_argument("--no-exp-suffix", action="store_true", default=False,
+                        help="Use exp-id as-is (without appending random UUID).")
     args = parser.parse_args()
 
     # --- W&B 集成 ---
     if args.wandb_project:
         import wandb
+        wandb_tags = [x.strip() for x in args.wandb_tags.split(",") if x.strip()] if args.wandb_tags else None
         wandb.init(
             project=args.wandb_project,
+            entity=args.wandb_entity or None,
+            group=args.wandb_group or None,
             name=args.exp_id,
             config=vars(args),
+            tags=wandb_tags,
             sync_tensorboard=True  # 魔法开关：自动把 PFRL 生成的 tensorboard 数据同步到云端
         )
 
@@ -102,12 +116,19 @@ def main():
     if args.load:
         args.outdir = experiments.prepare_output_dir(args, args.outdir, exp_id=args.load)
     else:
-        args.outdir = experiments.prepare_output_dir(args, args.outdir, exp_id="{}_{}".format(args.exp_id, str(uuid.uuid4())[:8]) if args.exp_id != "debug" else args.exp_id)
+        if args.no_exp_suffix or args.exp_id == "debug":
+            exp_id = args.exp_id
+        else:
+            exp_id = "{}_{}".format(args.exp_id, str(uuid.uuid4())[:8])
+        args.outdir = experiments.prepare_output_dir(args, args.outdir, exp_id=exp_id)
 
     def make_env(idx, test):
         # Use different random seeds for train and test envs
         process_seed = int(process_seeds[idx])
-        env_seed = 2 ** 32 - 1 - process_seed if test else process_seed
+        if test and args.eval_seed is not None:
+            env_seed = int(args.eval_seed) + idx
+        else:
+            env_seed = 2 ** 32 - 1 - process_seed if test else process_seed
         env = gym.make(args.env, disable_env_checker=True)
         # Normalize the action space
         env = pfrl.wrappers.NormalizeActionSpace(env)
@@ -126,6 +147,8 @@ def main():
 
         # Converts the new gymnasium implementation to old gym implementation
         env = GymnasiumWrapper(env)
+        if not test:
+            env = ActionStatsWrapper(env)
 
         return env
 
@@ -229,7 +252,7 @@ def main():
                 eval_interval=args.eval_interval,
                 checkpoint_freq=args.checkpoint_freq,
 
-                step_hooks=(ProgressStepHook(args.log_interval),),
+                step_hooks=(ProgressStepHook(args.log_interval, outdir=args.outdir),),
                 use_tensorboard=args.use_tensorboard
             )
 
