@@ -8,6 +8,7 @@ import time
 
 import gym
 import gym.spaces
+import gym_sted
 import torch
 from torch import nn
 
@@ -26,7 +27,7 @@ def main():
     import warnings
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", type=str, default="gym_sted:STEDsum-v0")
+    parser.add_argument("--env", type=str, default="STEDsum-v0")
     parser.add_argument("--num-envs", type=int, default=1)
     parser.add_argument("--seed", type=int, default=0, help="Random seed [0, 2 ** 32)")
     parser.add_argument("--gpu", type=int, default=None)

@@ -7,7 +7,7 @@ set -e
 
 VENV="/Users/huygens_onepiece/task/code/pysted/smlm-control/venv/bin/python3"
 SCRIPT="main.py"
-ENV="gym_sted:ContextualMOSTED-easy-hslb-v0"
+ENV="ContextualMOSTED-easy-hslb-v0"
 STEPS=100000
 EVAL_INTERVAL=5000
 EVAL_N_RUNS=10
