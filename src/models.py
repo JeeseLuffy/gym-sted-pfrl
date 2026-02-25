@@ -66,11 +66,10 @@ class Policy(nn.Module):
         ])
 
         # Signal encoder ([SNR, Resolution, Bleach] to a vector of length 4
-        self.signal_encoder_layers = nn.ModuleList([
-            nn.Linear(self.obs_space[1].shape[0], 16),
-            nn.Dropout(p=0.15),
-            nn.Linear(16, self.encoded_signal_shape)
-        ])
+        sig_layers = [nn.Linear(self.obs_space[1].shape[0], 16)]
+        if use_dropout: sig_layers.append(nn.Dropout(p=0.15))
+        sig_layers.append(nn.Linear(16, self.encoded_signal_shape))
+        self.signal_encoder_layers = nn.ModuleList(sig_layers)
 
         out_shape = calc_shape(self.img_shape, self.image_encoder_layers)
         in_features = 64 * numpy.prod(out_shape) + self.encoded_signal_shape
@@ -128,7 +127,7 @@ class PooledPolicy(nn.Module):
     """
     def __init__(
         self, in_channels=1, action_size=1, obs_space=None, encoded_signal_shape=16,
-        activation=nn.functional.leaky_relu
+        activation=nn.functional.leaky_relu, use_dropout=True
     ):
         self.in_channels = in_channels
         self.action_size = action_size
@@ -140,21 +139,19 @@ class PooledPolicy(nn.Module):
         self.img_shape = self.obs_space[0].shape
 
         # Image encoder (1 image to a vector) (This is the LargeAtari architecture)
-        self.image_encoder_layers = nn.ModuleList([
-            nn.Conv2d(self.obs_space[0].shape[0], 32, 8, stride=4),
-            nn.Dropout2d(p=0.15),
-            nn.Conv2d(32, 64, 4, stride=2),
-            nn.Dropout2d(p=0.15),
-            nn.Conv2d(64, 64, 3, stride=1),
-        ])
+        img_layers = [nn.Conv2d(self.obs_space[0].shape[0], 32, 8, stride=4)]
+        if use_dropout: img_layers.append(nn.Dropout2d(p=0.15))
+        img_layers.append(nn.Conv2d(32, 64, 4, stride=2))
+        if use_dropout: img_layers.append(nn.Dropout2d(p=0.15))
+        img_layers.append(nn.Conv2d(64, 64, 3, stride=1))
+        self.image_encoder_layers = nn.ModuleList(img_layers)
         self.image_pool_layer = nn.AdaptiveMaxPool2d(1)
 
         # Signal encoder ([SNR, Resolution, Bleach] to a vector of length 4 (?)
-        self.signal_encoder_layers = nn.ModuleList([
-            nn.Linear(self.obs_space[1].shape[0], 16),
-            nn.Dropout(p=0.15),
-            nn.Linear(16, self.encoded_signal_shape)
-        ])
+        sig_layers = [nn.Linear(self.obs_space[1].shape[0], 16)]
+        if use_dropout: sig_layers.append(nn.Dropout(p=0.15))
+        sig_layers.append(nn.Linear(16, self.encoded_signal_shape))
+        self.signal_encoder_layers = nn.ModuleList(sig_layers)
 
         in_features = 64 + self.encoded_signal_shape
 

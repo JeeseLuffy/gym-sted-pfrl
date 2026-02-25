@@ -73,7 +73,21 @@ def main():
                              "Calibrate so penalty/reward ratio is 5-20%%.")
     parser.add_argument("--unc-n-samples", type=int, default=20,
                         help="Number of MC Dropout forward passes for uncertainty estimation.")
+    parser.add_argument("--no-dropout", action="store_true", default=False,
+                        help="Disable Dropout in Policy layers (for true FLClab Baseline).")
+    parser.add_argument("--wandb-project", type=str, default="",
+                        help="Weights & Biases project name. If provided, enables wandb tracking.")
     args = parser.parse_args()
+
+    # --- W&B 集成 ---
+    if args.wandb_project:
+        import wandb
+        wandb.init(
+            project=args.wandb_project,
+            name=args.exp_id,
+            config=vars(args),
+            sync_tensorboard=True  # 魔法开关：自动把 PFRL 生成的 tensorboard 数据同步到云端
+        )
 
     logging.basicConfig(level=args.log_level)
 
@@ -131,10 +145,10 @@ def main():
     action_space = sample_env.action_space
 
     if args.model == "default":
-        policy = models.Policy(obs_space=obs_space, action_size=action_space.shape[0])
+        policy = models.Policy(obs_space=obs_space, action_size=action_space.shape[0], use_dropout=not args.no_dropout)
         vf = models.ValueFunction(obs_space=obs_space)            
     elif args.model == "pooled":
-        policy = models.PooledPolicy(obs_space=obs_space, action_size=action_space.shape[0])
+        policy = models.PooledPolicy(obs_space=obs_space, action_size=action_space.shape[0], use_dropout=not args.no_dropout)
         vf = models.PooledValueFunction(obs_space=obs_space)
     else:
         print(f"Model type `{args.model}` not found... Exiting")

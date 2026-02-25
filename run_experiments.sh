@@ -27,9 +27,6 @@ $VENV $SCRIPT \
   --ignore-warnings
 
 # --- Group B: PPO Baseline (no Dropout, no penalty) ---
-# NOTE: For Group B, use the original models.py WITHOUT Dropout.
-# You need to either: (a) git stash the Dropout changes, or
-# (b) add a --no-dropout flag. For now, train with Dropout but lambda=0.
 echo ""
 echo ">>> Group B: PPO Baseline"
 for seed in $SEEDS; do
@@ -38,7 +35,7 @@ for seed in $SEEDS; do
     --env "$ENV" --steps $STEPS \
     --eval-interval $EVAL_INTERVAL --eval-n-runs $EVAL_N_RUNS \
     --seed $seed --use-tensorboard --exp-id "B_baseline_s${seed}" \
-    --lambda-unc 0.0 --ignore-warnings &
+    --lambda-unc 0.0 --no-dropout --ignore-warnings &
 done
 wait
 echo "  Group B done."
