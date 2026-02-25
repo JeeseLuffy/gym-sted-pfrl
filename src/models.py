@@ -59,13 +59,16 @@ class Policy(nn.Module):
         # Image encoder (1 image to a vector) (This is the LargeAtari architecture)
         self.image_encoder_layers = nn.ModuleList([
             nn.Conv2d(self.in_channels, 32, 8, stride=4),
+            nn.Dropout2d(p=0.15),
             nn.Conv2d(32, 64, 4, stride=2),
+            nn.Dropout2d(p=0.15),
             nn.Conv2d(64, 64, 3, stride=1),
         ])
 
         # Signal encoder ([SNR, Resolution, Bleach] to a vector of length 4
         self.signal_encoder_layers = nn.ModuleList([
             nn.Linear(self.obs_space[1].shape[0], 16),
+            nn.Dropout(p=0.15),
             nn.Linear(16, self.encoded_signal_shape)
         ])
 
@@ -139,7 +142,9 @@ class PooledPolicy(nn.Module):
         # Image encoder (1 image to a vector) (This is the LargeAtari architecture)
         self.image_encoder_layers = nn.ModuleList([
             nn.Conv2d(self.obs_space[0].shape[0], 32, 8, stride=4),
+            nn.Dropout2d(p=0.15),
             nn.Conv2d(32, 64, 4, stride=2),
+            nn.Dropout2d(p=0.15),
             nn.Conv2d(64, 64, 3, stride=1),
         ])
         self.image_pool_layer = nn.AdaptiveMaxPool2d(1)
@@ -147,6 +152,7 @@ class PooledPolicy(nn.Module):
         # Signal encoder ([SNR, Resolution, Bleach] to a vector of length 4 (?)
         self.signal_encoder_layers = nn.ModuleList([
             nn.Linear(self.obs_space[1].shape[0], 16),
+            nn.Dropout(p=0.15),
             nn.Linear(16, self.encoded_signal_shape)
         ])
 

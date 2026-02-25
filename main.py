@@ -17,6 +17,7 @@ from pfrl.policies import GaussianHeadWithFixedCovariance, SoftmaxCategoricalHea
 
 from src import models, WrapPyTorch, GymnasiumWrapper
 from src.hooks import ProgressStepHook
+from src.uncertainty_wrapper import UncertaintyRewardWrapper
 
 TIMEFMT = "%Y%m%d-%H%M%S"
 
@@ -66,6 +67,11 @@ def main():
     parser.add_argument("--delayed-reward", action="store_true", default=False)
     parser.add_argument("--ignore-warnings", action="store_true", default=False)
     parser.add_argument("--use-tensorboard", action="store_true", default=False)
+    parser.add_argument("--lambda-unc", type=float, default=0.0,
+                        help="Uncertainty penalty weight. 0 = no penalty (baseline/dropout-only). "
+                             "Calibrate so penalty/reward ratio is 5-20%%.")
+    parser.add_argument("--unc-n-samples", type=int, default=20,
+                        help="Number of MC Dropout forward passes for uncertainty estimation.")
     args = parser.parse_args()
 
     logging.basicConfig(level=args.log_level)
@@ -167,6 +173,18 @@ def main():
             )
         )
     else:
+        train_env = make_env(0, test=False)
+        eval_env = make_env(0, test=True)
+
+        # Apply uncertainty reward wrapper to training env only
+        if args.lambda_unc > 0:
+            print(f"[UNC] Applying UncertaintyRewardWrapper with lambda={args.lambda_unc}, n_samples={args.unc_n_samples}")
+            train_env = UncertaintyRewardWrapper(
+                train_env, policy,
+                lambda_unc=args.lambda_unc,
+                n_samples=args.unc_n_samples
+            )
+
         if args.num_envs > 1:
             experiments.train_agent_batch_with_evaluation(
                 agent=agent,
@@ -180,14 +198,14 @@ def main():
                 eval_interval=args.eval_interval,
                 checkpoint_freq=args.checkpoint_freq,
                 log_interval=args.log_interval,
-                with_delayed_reward=args.delayed_reward,
+
                 use_tensorboard=args.use_tensorboard
             )
         else:
             experiments.train_agent_with_evaluation(
                 agent=agent,
-                env=make_env(0, test=False),
-                eval_env=make_env(0, test=True),
+                env=train_env,
+                eval_env=eval_env,
                 outdir=args.outdir,
                 steps=args.steps,
                 step_offset=args.load_ckpt,
@@ -195,7 +213,7 @@ def main():
                 eval_n_episodes=args.eval_n_runs,
                 eval_interval=args.eval_interval,
                 checkpoint_freq=args.checkpoint_freq,
-                with_delayed_reward=args.delayed_reward,
+
                 step_hooks=(ProgressStepHook(args.log_interval),),
                 use_tensorboard=args.use_tensorboard
             )
