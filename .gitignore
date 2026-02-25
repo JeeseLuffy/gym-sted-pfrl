@@ -2,6 +2,7 @@
 src/analysis/pretrained/*
 .microscope_cache.pkl
 data
+logs/
 *DS_Store
 
 # Byte-compiled / optimized / DLL files
