@@ -1,0 +1,80 @@
+{
+  "os": "macOS-15.5-arm64-arm-64bit",
+  "python": "CPython 3.11.14",
+  "startedAt": "2026-02-25T23:37:24.940796Z",
+  "args": [
+    "--env",
+    "ContextualMOSTED-easy-hslb-v0",
+    "--steps",
+    "5000",
+    "--eval-interval",
+    "1000",
+    "--eval-n-runs",
+    "3",
+    "--log-interval",
+    "128",
+    "--eval-seed",
+    "2026",
+    "--seed",
+    "1038",
+    "--outdir",
+    "./data_optuna",
+    "--exp-id",
+    "optuna_w1_t38_f34d8d",
+    "--no-exp-suffix",
+    "--lr",
+    "0.00038302470257336205",
+    "--batchsize",
+    "8",
+    "--update-interval",
+    "256",
+    "--gamma",
+    "0.9774059007441731",
+    "--lambda-unc",
+    "0.3195153939785989",
+    "--unc-n-samples",
+    "30",
+    "--ignore-warnings",
+    "--use-tensorboard",
+    "--wandb-project",
+    "sted-routeA",
+    "--wandb-entity",
+    "luffytryon1997-zhejiang-university",
+    "--wandb-group",
+    "routeA_v1",
+    "--wandb-tags",
+    "optuna,sted"
+  ],
+  "program": "/Users/huygens_onepiece/task/code/pysted/smlm-control/gym-sted-pfrl/main.py",
+  "codePath": "main.py",
+  "codePathLocal": "main.py",
+  "git": {
+    "remote": "https://github.com/JeeseLuffy/gym-sted-pfrl.git",
+    "commit": "f3d22ab6bc52a19bf928b0b2e7b2d4e1ed5efd80"
+  },
+  "email": "luffytryon1997@gmail.com",
+  "root": "/Users/huygens_onepiece/task/code/pysted/smlm-control/gym-sted-pfrl",
+  "host": "Huygens-Onepieces-MacBook-Air.local",
+  "executable": "/Users/huygens_onepiece/task/code/pysted/smlm-control/venv/bin/python3",
+  "cpu_count": 10,
+  "cpu_count_logical": 10,
+  "disk": {
+    "/": {
+      "total": "494384795648",
+      "used": "311333556224"
+    }
+  },
+  "memory": {
+    "total": "17179869184"
+  },
+  "apple": {
+    "name": "Apple M4",
+    "ecpuCores": 6,
+    "pcpuCores": 4,
+    "gpuCores": 10,
+    "memoryGb": 16,
+    "swapTotalBytes": "10737418240",
+    "ramTotalBytes": "17179869184"
+  },
+  "writerId": "e01x68hdr3jarajhummpqa09bmx3to05"
+}
