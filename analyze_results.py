@@ -23,7 +23,7 @@ import pfrl
 import gym
 import gym_sted
 
-from src import models
+from src import models, WrapPyTorch, GymnasiumWrapper
 
 def load_tb_data(logdir, tag):
     """Load scalar data from a TensorBoard log directory."""
@@ -103,6 +103,10 @@ def verify_core_hypothesis(model_path, env_id="ContextualMOSTED-easy-hslb-v0"):
     print(f"Loading model from {model_path}...")
     
     env = gym.make(env_id, disable_env_checker=True)
+    env = pfrl.wrappers.NormalizeActionSpace(env)
+    env = WrapPyTorch(env)
+    env = GymnasiumWrapper(env)
+    
     obs_space = env.observation_space
     action_space = env.action_space
     
@@ -123,20 +127,13 @@ def verify_core_hypothesis(model_path, env_id="ContextualMOSTED-easy-hslb-v0"):
     print("Collecting 1000 steps of data...")
     for _ in range(1000):
         # Convert obs to tensor
-        if isinstance(obs, tuple):
-            image_t = torch.from_numpy(np.array(obs[0], dtype=np.float32)).unsqueeze(0)
-            signal_t = torch.from_numpy(np.array(obs[1], dtype=np.float32)).unsqueeze(0)
-            obs_tensor = (image_t, signal_t)
-        else:
-            obs_tensor = torch.from_numpy(np.array(obs, dtype=np.float32)).unsqueeze(0)
-            
-        _, std = estimate_uncertainty(model.model.pi, obs_tensor, n_samples=20)
+        obs_tensor = pfrl.utils.batch_states([obs], torch.device("cpu"), lambda x: x)
+        _, std = estimate_uncertainty(policy, obs_tensor, n_samples=20)
         unc = float(std.mean())
         
         # Take deterministic action for testing
         with torch.no_grad():
-            out = model.model.pi(obs_tensor)
-            action_mean = out.mean.cpu().numpy()[0]
+            action_mean = policy(obs_tensor).mean.cpu().numpy()[0]
         
         # Log action magnitude (using p_sted specifically as it's the primary bleaching factor)
         # Action space is usually (p_sted, p_ex, pdt)
@@ -198,6 +195,10 @@ def generate_spatial_heatmap(model_path, env_id="ContextualMOSTED-easy-hslb-v0")
     print(f"\n--- Generating Spatial Uncertainty Heatmap ---")
     
     env = gym.make(env_id, disable_env_checker=True)
+    env = pfrl.wrappers.NormalizeActionSpace(env)
+    env = WrapPyTorch(env)
+    env = GymnasiumWrapper(env)
+    
     obs_space = env.observation_space
     action_space = env.action_space
     
@@ -213,17 +214,10 @@ def generate_spatial_heatmap(model_path, env_id="ContextualMOSTED-easy-hslb-v0")
         
     obs, _ = env.reset()
     
-    if isinstance(obs, tuple):
-        image = obs[0]
-        image_t = torch.from_numpy(np.array(image, dtype=np.float32)).unsqueeze(0)
-        signal_t = torch.from_numpy(np.array(obs[1], dtype=np.float32)).unsqueeze(0)
-        obs_tensor = (image_t, signal_t)
-    else:
-        image = obs
-        obs_tensor = torch.from_numpy(np.array(obs, dtype=np.float32)).unsqueeze(0)
+    obs_tensor = pfrl.utils.batch_states([obs], torch.device("cpu"), lambda x: x)
     
     # Get heatmap (64, 64)
-    heatmap = extract_feature_map_uncertainty(model.model.pi, obs_tensor, n_samples=20)
+    heatmap = extract_feature_map_uncertainty(policy, obs_tensor, n_samples=20)
     
     # Plot original image and heatmap
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
