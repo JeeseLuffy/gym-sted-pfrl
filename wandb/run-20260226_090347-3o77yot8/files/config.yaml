@@ -1,0 +1,174 @@
+_wandb:
+    value:
+        cli_version: 0.25.0
+        e:
+            kjgv31nt5ambtd3k1aw27bmnopi81rd9:
+                apple:
+                    ecpuCores: 6
+                    gpuCores: 10
+                    memoryGb: 16
+                    name: Apple M4
+                    pcpuCores: 4
+                    ramTotalBytes: "17179869184"
+                    swapTotalBytes: "10737418240"
+                args:
+                    - --env
+                    - ContextualMOSTED-easy-hslb-v0
+                    - --steps
+                    - "5000"
+                    - --eval-interval
+                    - "1000"
+                    - --eval-n-runs
+                    - "3"
+                    - --log-interval
+                    - "128"
+                    - --eval-seed
+                    - "2026"
+                    - --seed
+                    - "1044"
+                    - --outdir
+                    - ./data_optuna
+                    - --exp-id
+                    - optuna_w1_t44_a03fd4
+                    - --no-exp-suffix
+                    - --lr
+                    - "0.0002736010758904289"
+                    - --batchsize
+                    - "8"
+                    - --update-interval
+                    - "256"
+                    - --gamma
+                    - "0.9728380806153958"
+                    - --lambda-unc
+                    - "0.05793867606404245"
+                    - --unc-n-samples
+                    - "30"
+                    - --ignore-warnings
+                    - --use-tensorboard
+                    - --wandb-project
+                    - sted-routeA
+                    - --wandb-entity
+                    - luffytryon1997-zhejiang-university
+                    - --wandb-group
+                    - routeA_v1
+                    - --wandb-tags
+                    - optuna,sted
+                codePath: main.py
+                codePathLocal: main.py
+                cpu_count: 10
+                cpu_count_logical: 10
+                disk:
+                    /:
+                        total: "494384795648"
+                        used: "311405727744"
+                email: luffytryon1997@gmail.com
+                executable: /Users/huygens_onepiece/task/code/pysted/smlm-control/venv/bin/python3
+                git:
+                    commit: f3d22ab6bc52a19bf928b0b2e7b2d4e1ed5efd80
+                    remote: https://github.com/JeeseLuffy/gym-sted-pfrl.git
+                host: Huygens-Onepieces-MacBook-Air.local
+                memory:
+                    total: "17179869184"
+                os: macOS-15.5-arm64-arm-64bit
+                program: /Users/huygens_onepiece/task/code/pysted/smlm-control/gym-sted-pfrl/main.py
+                python: CPython 3.11.14
+                root: /Users/huygens_onepiece/task/code/pysted/smlm-control/gym-sted-pfrl
+                startedAt: "2026-02-26T01:03:47.560308Z"
+                writerId: kjgv31nt5ambtd3k1aw27bmnopi81rd9
+        m: []
+        python_version: 3.11.14
+        t:
+            "1":
+                - 1
+                - 5
+                - 35
+                - 53
+            "2":
+                - 1
+                - 5
+                - 35
+                - 53
+            "3":
+                - 13
+                - 15
+                - 16
+                - 35
+                - 61
+            "4": 3.11.14
+            "5": 0.25.0
+            "12": 0.25.0
+            "13": darwin-arm64
+batchsize:
+    value: 8
+bleach_sampling:
+    value: constant
+checkpoint_freq:
+    value: null
+delayed_reward:
+    value: false
+demo:
+    value: false
+env:
+    value: ContextualMOSTED-easy-hslb-v0
+eval_interval:
+    value: 1000
+eval_n_runs:
+    value: 3
+eval_seed:
+    value: 2026
+exp_id:
+    value: optuna_w1_t44_a03fd4
+gamma:
+    value: 0.9728380806153958
+gpu:
+    value: null
+ignore_warnings:
+    value: true
+lambda_unc:
+    value: 0.05793867606404245
+load:
+    value: ""
+load_ckpt:
+    value: 0
+log_interval:
+    value: 128
+log_level:
+    value: 20
+lr:
+    value: 0.0002736010758904289
+model:
+    value: default
+monitor:
+    value: false
+no_dropout:
+    value: false
+no_exp_suffix:
+    value: true
+num_envs:
+    value: 1
+outdir:
+    value: ./data_optuna
+recurrent:
+    value: false
+render:
+    value: false
+reward_scale_factor:
+    value: 1
+seed:
+    value: 1044
+steps:
+    value: 5000
+unc_n_samples:
+    value: 30
+update_interval:
+    value: 256
+use_tensorboard:
+    value: true
+wandb_entity:
+    value: luffytryon1997-zhejiang-university
+wandb_group:
+    value: routeA_v1
+wandb_project:
+    value: sted-routeA
+wandb_tags:
+    value: optuna,sted
